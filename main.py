@@ -1,5 +1,4 @@
 # Carga de librerías
-
 from pathlib import Path
 import matplotlib as mpl
 from fpdf import FPDF
@@ -41,17 +40,11 @@ class PDF(FPDF):
     def header(self):
         # Rendering logo:
         self.image("logos/logo PIRAGUA 2020_Mesa de trabajo 1.png", 170, 8, 33)
-
         self.add_font('ArialNovaBold', '', 'fonts/ArialNova-Bold.ttf')
-        # pdf.set_font("helvetica", size=12)
         self.set_font("ArialNovaBold", size=16)
-        # Setting font: helvetica bold 15
-        #self.set_font("helvetica", "B", 16)
         # Moving cursor to the right:
         self.cell(80)
-
         self.set_text_color(0, 123, 179)
-
         # Printing title:
         self.cell(10, 10, txt = titulo, border=0, align="C")
         # Performing a line break:
@@ -108,4 +101,5 @@ pdf.multi_cell(0, 7, txt = f"La estación pluviográfica {estacion}, de la terri
                align = "J")
 pdf.ln(5)
 pdf.image(img, w=pdf.epw)
+pdf.ln(5)
 pdf.output("new-tuto2.pdf")

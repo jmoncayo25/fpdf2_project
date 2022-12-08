@@ -1,28 +1,24 @@
+import json
+
 import requests
 import numpy as np
 import pandas as pd
 from datetime import datetime, timedelta
+import getData
+import json
+from pandas import json_normalize
 
-def get_estacion_ppt(estacion, inicio, fin):
-    filtros = {
-        'estacion': estacion,
-        'inicio': inicio,
-        'fin': fin
-    }
-    url = "https://geopiragua.corantioquia.gov.co/api/v1/precipitacion/{estacion}?date_estacion__gte={inicio}&date_estacion__lt={fin}&downloadfile".format(
-        **filtros)
-    df = pd.read_csv(url, index_col=0, parse_dates=[1])
-    df.loc[df.muestra < 0, 'muestra'] = np.NaN
-    return df
+data = getData.estaciones()
+lluvia = getData.lluvia(40, '2020-11-17', '2020-11-24')
 
+print(data.head())
+print(lluvia.head())
 
-df = get_estacion_ppt(40, '2020-11-17', '2020-11-24')
-
-datetime_obj = datetime.strptime(
-    str(df['fecha'].max())
-    , "%Y-%m-%d  %H:%M:%S"
-)
-
-print(
-    datetime_obj.strftime("%d-%m-%Y")
-)
+#umbrales_json = json.loads("https://geopiragua.corantioquia.gov.co/api/v1/umbrales")
+#umbrales_normal = pd.json_normalize(data['values'])
+response = requests.get("https://geopiragua.corantioquia.gov.co/api/v1/umbrales")
+dictr = response.json()
+recs = dictr['values']
+df = json_normalize(recs)
+df['fecha'] = df['fecha'].str[:10]
+df['fecha'] = pd.to_datetime(df['fecha'], format = "%Y-%m-%d").dt.strftime('%d-%m-%Y')
