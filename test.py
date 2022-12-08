@@ -17,3 +17,12 @@ def get_estacion_ppt(estacion, inicio, fin):
 
 
 df = get_estacion_ppt(40, '2020-11-17', '2020-11-24')
+
+datetime_obj = datetime.strptime(
+    str(df['fecha'].max())
+    , "%Y-%m-%d  %H:%M:%S"
+)
+
+print(
+    datetime_obj.strftime("%d-%m-%Y")
+)

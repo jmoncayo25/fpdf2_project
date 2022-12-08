@@ -34,6 +34,9 @@ territorial = "Aburrá Norte"
 ubicacion = "Planta de Tratamiento de Agua Potable - EPM"
 fuente = "Quebrada La Lopez"
 
+# Extracción de tabla de estaciones
+estaciones = pd.read_csv('https://geopiragua.corantioquia.gov.co/api/v1/estaciones/?downloadfile')
+
 class PDF(FPDF):
     def header(self):
         # Rendering logo:
@@ -64,7 +67,7 @@ class PDF(FPDF):
         self.cell(0, 10, f"Página {self.page_no()}/{{nb}}", align="R")
 
 
-fig = Figure(figsize=(6, 4), dpi=300)
+fig = Figure(figsize=(7, 5), dpi=300)
 fig.subplots_adjust(top=0.8)
 ax1 = fig.add_subplot(211)
 ax1.set_ylabel("precipitacion")
