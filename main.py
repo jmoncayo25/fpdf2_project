@@ -11,23 +11,10 @@ from PIL import Image
 import pandas as pd
 import os
 
-# Definición de funciones de extracción de datos desde API
-def get_estacion_ppt(estacion, inicio, fin):
-    filtros = {
-        'estacion': estacion,
-        'inicio': inicio,
-        'fin': fin
-    }
-    url = "https://geopiragua.corantioquia.gov.co/api/v1/precipitacion/{estacion}?date_estacion__gte={inicio}&date_estacion__lt={fin}&downloadfile".format(
-        **filtros)
-    df = pd.read_csv(url, index_col=0, parse_dates=[1])
-    df.loc[df.muestra < 0, 'muestra'] = np.NaN
-    return df
-
 # Definición de ruta de fuentes
 fpath = Path("fonts/ArialNovaCond.ttf")
 
-titulo = "Reporte automático de precipitaciones: "
+titulo = "Reporte automático de precipitaciones"
 estacion = "Barbosa 73"
 territorial = "Aburrá Norte"
 ubicacion = "Planta de Tratamiento de Agua Potable - EPM"

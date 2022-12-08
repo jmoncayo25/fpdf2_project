@@ -22,3 +22,5 @@ recs = dictr['values']
 df = json_normalize(recs)
 df['fecha'] = df['fecha'].str[:10]
 df['fecha'] = pd.to_datetime(df['fecha'], format = "%Y-%m-%d").dt.strftime('%d-%m-%Y')
+
+df[['estacion', 'fecha', 'umbral']].value_counts().reset_index(name='conteo')
