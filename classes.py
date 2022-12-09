@@ -30,5 +30,3 @@ class infoEstacion:
     def return_ubicacion(self):
         ubicacion_estacion = estaciones(self.codigo)['ubicacion'].loc[estaciones(self.codigo).index[0]]
         return ubicacion_estacion
-
-infoEstacion(72).return_municipio()
