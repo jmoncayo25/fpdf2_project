@@ -1,6 +1,7 @@
 # Carga de librerías
 
 import os
+import sys
 import numpy as np
 import pandas as pd
 from fpdf import FPDF
@@ -18,7 +19,9 @@ import getData
 from classes import infoEstacion
 
 # Definición de constantes
-get_estacion = infoEstacion(72)
+var1 = sys.argv[1] # Constante establecida desde línea de comandos
+
+get_estacion = infoEstacion(int(var1))
 estacion = get_estacion.return_codigo()
 titulo = "Reporte automático de precipitaciones"
 codigo = get_estacion.return_municipio() + " " + str(get_estacion.return_codigo())
