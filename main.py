@@ -18,22 +18,15 @@ import getData
 from classes import info_estacion
 
 # Definición de constantes
-
-estacion = getData.estaciones(73)
-titulo = info_estacion.codigo
-estacion = "Barbosa 73"
-territorial = "Aburrá Norte"
-ubicacion = "Planta de Tratamiento de Agua Potable - EPM"
-fuente = "Quebrada La Lopez"
-
+estacion = getData.estaciones(72)
+titulo = "Reporte automático de precipitaciones"
+codigo = info_estacion.municipio + " " + str(info_estacion.codigo)
+territorial = info_estacion.territorial
+ubicacion = info_estacion.ubicacion
+fuente = info_estacion.fuente
 
 # Definición de ruta de fuentes
 fpath = Path("fonts/ArialNovaCond.ttf")
-
-titulo = "Reporte automático de precipitaciones"
-
-# Extracción de tabla de estaciones
-estaciones = pd.read_csv('https://geopiragua.corantioquia.gov.co/api/v1/estaciones/?downloadfile')
 
 class PDF(FPDF):
     def header(self):
@@ -63,7 +56,7 @@ fig = Figure(figsize=(7, 5), dpi=300)
 fig.subplots_adjust(top=0.8)
 ax1 = fig.add_subplot(211)
 ax1.set_ylabel("precipitacion")
-ax1.set_title(f"Precipitación acumulada en {estacion}.", font=fpath)
+ax1.set_title(f"Precipitación acumulada en {codigo}.", font=fpath)
 
 t = np.arange(0.0, 1.0, 0.01)
 s = np.sin(2 * np.pi * t)
@@ -91,10 +84,10 @@ pdf.add_font('ArialNova', '', 'fonts/ArialNovaCond.ttf')
 #pdf.set_font("helvetica", size=12)
 pdf.set_font("ArialNova", size=12)
 pdf.set_text_color(0, 123, 179)
-pdf.cell(0, 10, estacion, border=0, align="C", new_y="NEXT")
+pdf.cell(0, 10, codigo , border=0, align="C", new_y="NEXT")
 pdf.ln(5)
 pdf.set_text_color(0, 0, 0)
-pdf.multi_cell(0, 7, txt = f"La estación pluviográfica {estacion}, de la territorial {territorial}, ubicada en {ubicacion} y "
+pdf.multi_cell(0, 7, txt = f"La estación pluviográfica {codigo}, de la territorial {territorial}, ubicada en {ubicacion} y "
                            f"cercana a la fuente hídrica {fuente}, ha presentado, hasta las 23:55 del 04 de mayo de 2022, 19.9 mm de lluvia."
                            f" El porcentaje de transmisión de los datos para la estación analizada fue de 72.8%.",
                align = "J")

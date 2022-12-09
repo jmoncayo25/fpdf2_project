@@ -2,6 +2,7 @@
 
 from dataclasses import dataclass
 import pandas as pd
+from getData import estaciones
 
 # Se inicializa estacion
 estacion = {'codigo': [73],
@@ -19,20 +20,18 @@ estacion = pd.DataFrame(estacion)
 @dataclass
 class infoEstacion:
     codigo: int
-    municipio: str
-    ubicacion: str
-    territorial: str
-    fuente: str
-    altitud: int
-    latitud: float
-    longitud:float
+    def return_codigo(self):
+        codigo_estacion = estaciones(self.codigo)['codigo'].loc[estaciones(self.codigo).index[0]]
+        return codigo_estacion
+    def return_municipio(self):
+        municipio_estacion = estaciones(self.codigo)['municipio'].loc[estaciones(self.codigo).index[0]]
+        return municipio_estacion
 
-info_estacion = infoEstacion(estacion['codigo'].loc[estacion.index[0]],
-                   estacion['municipio'].loc[estacion.index[0]],
-                   estacion['ubicacion'].loc[estacion.index[0]],
-                   estacion['territorial'].loc[estacion.index[0]],
-                   estacion['fuente'].loc[estacion.index[0]],
-                   estacion['altitud'].loc[estacion.index[0]],
-                   estacion['latitud'].loc[estacion.index[0]],
-                   estacion['ubicacion'].loc[estacion.index[0]])
+code = infoEstacion(72).return_municipio()
+code.return_municipio()
 
+infoEstacion.return_municipio(72)
+
+def return_codigo(codigo):
+    codigo = estaciones(codigo)['codigo'].loc[estaciones(codigo).index[0]]
+    return codigo
