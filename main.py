@@ -15,20 +15,22 @@ from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 # Carga de scripts auxiliares
 
 import getData
+from classes import info_estacion
 
 # Definición de constantes
 
 estacion = getData.estaciones(73)
-titulo = "Reporte automático de precipitaciones"
+titulo = info_estacion.codigo
+estacion = "Barbosa 73"
+territorial = "Aburrá Norte"
+ubicacion = "Planta de Tratamiento de Agua Potable - EPM"
+fuente = "Quebrada La Lopez"
+
 
 # Definición de ruta de fuentes
 fpath = Path("fonts/ArialNovaCond.ttf")
 
 titulo = "Reporte automático de precipitaciones"
-estacion = "Barbosa 73"
-territorial = "Aburrá Norte"
-ubicacion = "Planta de Tratamiento de Agua Potable - EPM"
-fuente = "Quebrada La Lopez"
 
 # Extracción de tabla de estaciones
 estaciones = pd.read_csv('https://geopiragua.corantioquia.gov.co/api/v1/estaciones/?downloadfile')

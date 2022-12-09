@@ -61,7 +61,7 @@ class infoEstacion:
     ubicacion: str
     territorial: str
     fuente: str
-    altitud: str
+    altitud: int
     latitud: float
     longitud:float
 
@@ -69,7 +69,7 @@ est = infoEstacion(estacion['codigo'].loc[estacion.index[0]],
                    estacion['municipio'].loc[estacion.index[0]],
                    estacion['ubicacion'].loc[estacion.index[0]],
                    estacion['territorial'].loc[estacion.index[0]],
-                   estacion['ubicacion'].loc[estacion.index[0]],
+                   estacion['fuente'].loc[estacion.index[0]],
                    estacion['altitud'].loc[estacion.index[0]],
                    estacion['latitud'].loc[estacion.index[0]],
                    estacion['ubicacion'].loc[estacion.index[0]])
