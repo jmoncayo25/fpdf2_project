@@ -44,7 +44,6 @@ def umbrales_filter(estacion):
     umbrales = umbrales[umbrales['estacion'] == estacion]
     return umbrales
 
-
 if __name__ == "__main__":
     #estaciones()
     umbrales()

@@ -1,15 +1,25 @@
 # Carga de librerías
+
+import os
+import numpy as np
+import pandas as pd
+from fpdf import FPDF
+from PIL import Image
 from pathlib import Path
 import matplotlib as mpl
-from fpdf import FPDF
 from datetime import date
+from matplotlib.figure import Figure
 from matplotlib import font_manager as fm, rcParams
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
-from matplotlib.figure import Figure
-import numpy as np
-from PIL import Image
-import pandas as pd
-import os
+
+# Carga de scripts auxiliares
+
+import getData
+
+# Definición de constantes
+
+estacion = getData.estaciones(73)
+titulo = "Reporte automático de precipitaciones"
 
 # Definición de ruta de fuentes
 fpath = Path("fonts/ArialNovaCond.ttf")
