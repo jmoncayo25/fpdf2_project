@@ -15,15 +15,16 @@ from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 # Carga de scripts auxiliares
 
 import getData
-from classes import info_estacion
+from classes import infoEstacion
 
 # Definición de constantes
-estacion = getData.estaciones(72)
+get_estacion = infoEstacion(72)
+estacion = get_estacion.return_codigo()
 titulo = "Reporte automático de precipitaciones"
-codigo = info_estacion.municipio + " " + str(info_estacion.codigo)
-territorial = info_estacion.territorial
-ubicacion = info_estacion.ubicacion
-fuente = info_estacion.fuente
+codigo = get_estacion.return_municipio() + " " + str(get_estacion.return_codigo())
+territorial = get_estacion.return_territorial()
+ubicacion = get_estacion.return_ubicacion()
+fuente = get_estacion.return_fuente()
 
 # Definición de ruta de fuentes
 fpath = Path("fonts/ArialNovaCond.ttf")
