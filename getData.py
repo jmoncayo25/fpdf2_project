@@ -44,6 +44,21 @@ def umbrales_filter(estacion):
     umbrales = umbrales[umbrales['estacion'] == estacion]
     return umbrales
 
+# Definición de función de extracción de datos semanales de lluvia
+def weekData(estacion):
+    #hoy = datetime.today() # Hasta que estaciones funcionen de nuevo
+    hoy = pd.to_datetime('2022-09-24')
+    inicio = (hoy - timedelta(days=6)).strftime('%Y-%m-%d')
+    fin = (hoy - timedelta(days=-1)).strftime('%Y-%m-%d')
+    lluvia_semanal = lluvia(estacion, inicio, fin)
+    return lluvia_semanal
+
+# Definición de función de obtención de acumulado semanal de lluvia
+def week_sum(estacion):
+    acumulado = round(weekData(estacion)['muestra'].sum(), 2)
+    return acumulado
+
+
 if __name__ == "__main__":
     #estaciones()
     umbrales()

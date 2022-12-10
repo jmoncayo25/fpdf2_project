@@ -20,14 +20,16 @@ from classes import infoEstacion
 
 # Definición de constantes
 var1 = sys.argv[1] # Constante establecida desde línea de comandos
-
-get_estacion = infoEstacion(int(var1))
+get_estacion = infoEstacion(int(float(var1)))
 estacion = get_estacion.return_codigo()
-titulo = "Reporte automático de precipitaciones"
+titulo = "Reporte semanal de precipitaciones"
 codigo = get_estacion.return_municipio() + " " + str(get_estacion.return_codigo())
 territorial = get_estacion.return_territorial()
 ubicacion = get_estacion.return_ubicacion()
 fuente = get_estacion.return_fuente()
+
+# Extracción de datos de lluvia
+lluvia_sum = getData.week_sum(73)
 
 # Definición de ruta de fuentes
 fpath = Path("fonts/ArialNovaCond.ttf")
@@ -36,8 +38,9 @@ class PDF(FPDF):
     def header(self):
         # Rendering logo:
         self.image("logos/logo PIRAGUA 2020_Mesa de trabajo 1.png", 170, 8, 33)
-        self.add_font('ArialNovaBold', '', 'fonts/ArialNova-Bold.ttf')
-        self.set_font("ArialNovaBold", size=16)
+        #self.add_font('ArialNovaBold', '', 'fonts/ArialNova-Bold.ttf')
+        self.add_font('CrimsonTextBold', '', 'fonts/CrimsonText-Bold.ttf')
+        self.set_font("CrimsonTextBold", size=16)
         # Moving cursor to the right:
         self.cell(80)
         self.set_text_color(0, 123, 179)
@@ -56,7 +59,7 @@ class PDF(FPDF):
         self.cell(0, 10, f"Página {self.page_no()}/{{nb}}", align="R")
 
 
-fig = Figure(figsize=(7, 5), dpi=300)
+fig = Figure(figsize=(7, 5), dpi=200)
 fig.subplots_adjust(top=0.8)
 ax1 = fig.add_subplot(211)
 ax1.set_ylabel("precipitacion")
@@ -84,18 +87,20 @@ img = Image.fromarray(np.asarray(canvas.buffer_rgba()))
 pdf = PDF()
 pdf.set_margins(20, 20, 20)
 pdf.add_page()
-pdf.add_font('ArialNova', '', 'fonts/ArialNovaCond.ttf')
+#pdf.add_font('ArialNova', '', 'fonts/ArialNovaCond.ttf')
+pdf.add_font('CrimsonTextRegular', '', 'fonts/CrimsonText-Regular.ttf')
 #pdf.set_font("helvetica", size=12)
-pdf.set_font("ArialNova", size=12)
+#pdf.set_font("ArialNova", size=12)
+pdf.set_font("CrimsonTextRegular", size=12)
 pdf.set_text_color(0, 123, 179)
 pdf.cell(0, 10, codigo , border=0, align="C", new_y="NEXT")
 pdf.ln(5)
 pdf.set_text_color(0, 0, 0)
-pdf.multi_cell(0, 7, txt = f"La estación pluviográfica {codigo}, de la territorial {territorial}, ubicada en {ubicacion} y "
-                           f"cercana a la fuente hídrica {fuente}, ha presentado, hasta las 23:55 del 04 de mayo de 2022, 19.9 mm de lluvia."
+pdf.multi_cell(0, 6, txt = f"La estación pluviográfica {codigo}, de la territorial {territorial}, ubicada en {ubicacion} y "
+                           f"cercana a la fuente hídrica {fuente}, ha presentado, hasta las 23:55 del 04 de mayo de 2022, {lluvia_sum} mm de lluvia."
                            f" El porcentaje de transmisión de los datos para la estación analizada fue de 72.8%.",
                align = "J")
 pdf.ln(5)
 pdf.image(img, w=pdf.epw)
 pdf.ln(5)
-pdf.output("new-tuto2.pdf")
+pdf.output(f"pdfs/{codigo}.pdf")
