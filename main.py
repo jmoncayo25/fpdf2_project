@@ -2,21 +2,27 @@
 
 import os
 import sys
+import locale
 import numpy as np
 import pandas as pd
 from fpdf import FPDF
 from PIL import Image
 from pathlib import Path
 import matplotlib as mpl
-from datetime import date
+from datetime import date, timedelta
 from matplotlib.figure import Figure
 from matplotlib import font_manager as fm, rcParams
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
+
+# Instrucción para cambio de configuración local
+locale.setlocale(locale.LC_TIME, 'es_ES.UTF-8')
 
 # Carga de scripts auxiliares
 
 import getData
 from classes import infoEstacion
+
+#lista = [i for i in range(5, 10)]
 
 # Definición de constantes
 var1 = sys.argv[1] # Constante establecida desde línea de comandos
@@ -29,7 +35,15 @@ ubicacion = get_estacion.return_ubicacion()
 fuente = get_estacion.return_fuente()
 
 # Extracción de datos de lluvia
-lluvia_sum = getData.week_sum(73)
+#lluvia_sum = getData.week_sum(63)
+hoy = pd.to_datetime('2022-03-06')
+inicio = (hoy - timedelta(days=6)).strftime('%Y-%m-%d')
+fin = (hoy - timedelta(days=-1)).strftime('%Y-%m-%d')
+lluvia_semanal = getData.lluvia(var1, inicio, fin) # Para obtener el conjunto de datos semanal de lluvia
+lluvia_sum = round(lluvia_semanal['muestra'].sum(), 2) # Para obtener el acumulado semanal de lluvia
+min_fecha = pd.to_datetime(lluvia_semanal['fecha'], format="%Y-%m-%d").dt.strftime('%d %B de %Y').min() # Formateo fecha inicial
+max_fecha = pd.to_datetime(lluvia_semanal['fecha'], format="%Y-%m-%d").dt.strftime('%d %B de %Y').max() # Formateo fecha final
+porc_transm = round((lluvia_semanal['muestra'].count()/2016)*100, 2)
 
 # Definición de ruta de fuentes
 fpath = Path("fonts/ArialNovaCond.ttf")
@@ -97,8 +111,8 @@ pdf.cell(0, 10, codigo , border=0, align="C", new_y="NEXT")
 pdf.ln(5)
 pdf.set_text_color(0, 0, 0)
 pdf.multi_cell(0, 6, txt = f"La estación pluviográfica {codigo}, de la territorial {territorial}, ubicada en {ubicacion} y "
-                           f"cercana a la fuente hídrica {fuente}, ha presentado, hasta las 23:55 del 04 de mayo de 2022, {lluvia_sum} mm de lluvia."
-                           f" El porcentaje de transmisión de los datos para la estación analizada fue de 72.8%.",
+                           f"cercana a la fuente hídrica {fuente}, ha presentado, entre el {min_fecha} y el {max_fecha}, {lluvia_sum} mm de lluvia."
+                           f" El porcentaje de transmisión de los datos para la estación analizada fue de {porc_transm}%.",
                align = "J")
 pdf.ln(5)
 pdf.image(img, w=pdf.epw)
