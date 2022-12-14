@@ -126,3 +126,5 @@ class infoEstacion:
 
 a = infoEstacion(1)
 a.estacion(1)
+
+df_umbrales[(df_umbrales['fecha'] >= inicio)]
