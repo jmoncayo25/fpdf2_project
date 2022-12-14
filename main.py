@@ -82,8 +82,8 @@ class PDF(FPDF):
         self.cell(0, 10, f"Página {self.page_no()}/{{nb}}", align="R")
 
 
-fig = Figure(figsize=(7, 5), dpi=200)
-fig.subplots_adjust(top=0.8)
+fig = Figure(figsize=(8, 8), dpi=300)
+fig.subplots_adjust(top=0.92) # El margen entre la figura y la parte superior del recuadro
 ax1 = fig.add_subplot(211)
 ax1.set_ylabel("precipitacion")
 ax1.set_title(f"Precipitación acumulada en {codigo}.", font=fpath)
@@ -121,11 +121,12 @@ pdf.ln(5)
 pdf.set_text_color(0, 0, 0)
 pdf.multi_cell(0, 6, txt = f"La estación pluviográfica {codigo}, de la territorial {territorial}, ubicada en {ubicacion} y "
                            f"cercana a la fuente hídrica {fuente}, ha presentado, entre el {min_fecha} y el {max_fecha}, {lluvia_sum} mm de lluvia."
-                           f" El porcentaje de transmisión de los datos para la estación analizada fue de {porc_transm}%. Así mismo, para las fechas reportadas se presentaron "
-                           f"{umbrales_amarillos} umbral(es) amarillo(s), {umbrales_naranjas} umbral(es) naranja(s) y {umbrales_rojos} umbral(es) rojo(s). Para más información consulte"
-                           f" el Geoportal en la página: [geopiragua.corantioquia.gov.co/].",
+                           f" El porcentaje de transmisión de los datos para la estación analizada fue de {porc_transm}%. Así mismo, para las fechas reportadas, se presentaron "
+                           f"{umbrales_amarillos} umbral(es) de lluvia amarillo(s), {umbrales_naranjas} umbral(es) de lluvia naranja(s) y {umbrales_rojos} umbral(es) de lluvia rojo(s). Para más información consulte"
+                           f" el Geoportal de Piragua-Corantioquia en la página: [geopiragua.corantioquia.gov.co/].",
                align = "J")
-pdf.ln(5)
-pdf.image(img, w=pdf.epw)
-pdf.ln(5)
+pdf.ln(2)
+#pdf.set_y(50)
+pdf.image(img, w=pdf.epw) # epw es Effective page width
+#pdf.ln(2)
 pdf.output(f"pdfs/{codigo}.pdf")
