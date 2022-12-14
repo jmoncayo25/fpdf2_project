@@ -9,6 +9,7 @@ from fpdf import FPDF
 from PIL import Image
 from pathlib import Path
 import matplotlib as mpl
+import matplotlib.dates as mdates
 from datetime import date, timedelta
 from matplotlib.figure import Figure
 from matplotlib import font_manager as fm, rcParams
@@ -40,6 +41,7 @@ hoy = pd.to_datetime('2022-04-01')
 inicio = (hoy - timedelta(days=6)).strftime('%Y-%m-%d')
 fin = (hoy - timedelta(days=-1)).strftime('%Y-%m-%d')
 lluvia_semanal = getData.lluvia(codigoEstacion, inicio, fin) # Para obtener el conjunto de datos semanal de lluvia
+lluvia_diaria = lluvia_semanal.resample('D', on = "fecha").sum().reset_index() # Con reset index cambiamos el indice de fecha a columna fecha
 lluvia_sum = round(lluvia_semanal['muestra'].sum(), 2) # Para obtener el acumulado semanal de lluvia
 min_fecha = pd.to_datetime(lluvia_semanal['fecha'], format="%Y-%m-%d").min().strftime('%d %B de %Y') # Formateo fecha inicial
 max_fecha = pd.to_datetime(lluvia_semanal['fecha'], format="%Y-%m-%d").max().strftime('%d %B de %Y') # Formateo fecha final
@@ -81,25 +83,30 @@ class PDF(FPDF):
         # Printing page number:
         self.cell(0, 10, f"Página {self.page_no()}/{{nb}}", align="R")
 
-
+myFmt = mdates.DateFormatter('%d-%b') # Formateo de fechas en matplotlib
 fig = Figure(figsize=(8, 8), dpi=300)
 fig.subplots_adjust(top=0.92) # El margen entre la figura y la parte superior del recuadro
+fig.suptitle(f"Precipitación acumulada diaria en estación pluviográfica {codigo}", font=fpath)
 ax1 = fig.add_subplot(211)
-ax1.set_ylabel("precipitacion")
-ax1.set_title(f"Precipitación acumulada en {codigo}.", font=fpath)
+ax1.set_ylabel("Precipitación por día [mm/día]", font=fpath)
+ax1.set_title(f"{ubicacion}", font=fpath)
 
-t = np.arange(0.0, 1.0, 0.01)
-s = np.sin(2 * np.pi * t)
-(line,) = ax1.plot(t, s, color="blue", lw=2)
+#t = np.arange(0.0, 1.0, 0.01)
+t = lluvia_diaria['fecha']
+s = lluvia_diaria['muestra']
+ax1.bar(t, s, width=0.5, color = "#468AC1", edgecolor='black')
+ax1.xaxis.set_major_formatter(myFmt)
+ax1.grid(color = 'gray',  linestyle = '--', linewidth = 0.2)
 
 # Fixing random state for reproducibility
 np.random.seed(19680801)
-
-ax2 = fig.add_axes([0.15, 0.1, 0.7, 0.3])
-n, bins, patches = ax2.hist(
-    3+np.random.randn(1000), 50, facecolor="blue", edgecolor="blue"
-)
-ax2.set_xlabel("Precipitación (mm)")
+#ax2 = fig.add_axes([0.13, 0.20, 0.75, 0.3])
+ax2 = fig.add_subplot(212)
+ax2.bar(t, s, width=0.5, color = "#468AC1", edgecolor='black')
+ax2.xaxis.set_major_formatter(myFmt)
+ax2.grid(color = 'gray',  linestyle = '--', linewidth = 0.2)
+ax2.set_xlabel("Precipitación (mm)", font=fpath)
+ax2.set_ylabel("Precipitación por día [mm/día]", font=fpath)
 
 # Converting Figure to an image:
 canvas = FigureCanvas(fig)
@@ -127,6 +134,9 @@ pdf.multi_cell(0, 6, txt = f"La estación pluviográfica {codigo}, de la territo
                align = "J")
 pdf.ln(2)
 #pdf.set_y(50)
-pdf.image(img, w=pdf.epw) # epw es Effective page width
+pdf.image(img, w=pdf.epw)# epw es Effective page width
+pdf.ln(1)
+pdf.multi_cell(0, 6, txt = "La calidad de los datos no ha sido verificada exhaustivamente",
+               align = "J")
 #pdf.ln(2)
 pdf.output(f"pdfs/{codigo}.pdf")
