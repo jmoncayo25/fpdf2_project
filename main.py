@@ -43,9 +43,10 @@ fin = (hoy - timedelta(days=-1)).strftime('%Y-%m-%d')
 lluvia_semanal = getData.lluvia(codigoEstacion, inicio, fin) # Para obtener el conjunto de datos semanal de lluvia
 lluvia_diaria = lluvia_semanal.resample('D', on = "fecha").sum().reset_index() # Con reset index cambiamos el indice de fecha a columna fecha
 lluvia_sum = round(lluvia_semanal['muestra'].sum(), 2) # Para obtener el acumulado semanal de lluvia
-min_fecha = pd.to_datetime(lluvia_semanal['fecha'], format="%Y-%m-%d").min().strftime('%d %B de %Y') # Formateo fecha inicial
-max_fecha = pd.to_datetime(lluvia_semanal['fecha'], format="%Y-%m-%d").max().strftime('%d %B de %Y') # Formateo fecha final
+min_fecha = pd.to_datetime(lluvia_semanal['fecha'], format="%Y-%m-%d").min().strftime('%d de %B de %Y') # Formateo fecha inicial
+max_fecha = pd.to_datetime(lluvia_semanal['fecha'], format="%Y-%m-%d").max().strftime('%d de %B de %Y') # Formateo fecha final
 porc_transm = round((lluvia_semanal['muestra'].count()/2016)*100, 2) # Se calcula % transmisión de datos
+lluvia_cumsum = lluvia_semanal.reset_index().drop(columns = 'id')['muestra'].cumsum()
 
 # Extracción de datos de umbrales
 custom_date_parser = lambda x: date.strptime(x, "%d-%m-%Y")
@@ -98,11 +99,11 @@ ax1.bar(t, s, width=0.5, color = "#468AC1", edgecolor='black')
 ax1.xaxis.set_major_formatter(myFmt)
 ax1.grid(color = 'gray',  linestyle = '--', linewidth = 0.2)
 
-# Fixing random state for reproducibility
-np.random.seed(19680801)
+x = lluvia_semanal['fecha']
+y = lluvia_cumsum[::-1]
 #ax2 = fig.add_axes([0.13, 0.20, 0.75, 0.3])
 ax2 = fig.add_subplot(212)
-ax2.bar(t, s, width=0.5, color = "#468AC1", edgecolor='black')
+ax2.plot(x, y, color = "#468AC1")
 ax2.xaxis.set_major_formatter(myFmt)
 ax2.grid(color = 'gray',  linestyle = '--', linewidth = 0.2)
 ax2.set_xlabel("Precipitación (mm)", font=fpath)
