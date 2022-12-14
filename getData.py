@@ -1,5 +1,6 @@
 # Script de definición de funciones de extracción de datos
 
+import time
 import requests
 import numpy as np
 import pandas as pd
@@ -32,11 +33,13 @@ def umbrales():
     response = requests.get("https://geopiragua.corantioquia.gov.co/api/v1/umbrales")
     dictr = response.json()
     recs = dictr['values']
-    umbrales = json_normalize(recs)
-    umbrales['fecha'] = umbrales['fecha'].str[:10]
-    umbrales['fecha'] = pd.to_datetime(umbrales['fecha'], format="%Y-%m-%d").dt.strftime('%d-%m-%Y')
-    umbrales = umbrales[['estacion', 'fecha', 'umbral']].value_counts().reset_index(name='conteo')
-    umbrales.to_csv("output/umbrales.csv", header=True, sep=",", index = False)
+    umbrales = pd.json_normalize(recs)
+    umbrales['fecha'] = pd.to_datetime(umbrales['fecha'], format="%Y-%m-%dT%H:%M:%S").dt.strftime('%d-%m-%Y %H:%M:%S')
+    umbrales.to_csv("output/umbrales_raw.csv", header=True, sep=",", index=False)
+    #umbrales['fecha'] = umbrales['fecha'].str[:10]
+    umbrales['fecha'] = pd.to_datetime(umbrales['fecha'], format="%d-%m-%Y %H:%M:%S").dt.strftime('%d-%m-%Y')
+    umbrales_count = umbrales[['estacion', 'fecha', 'umbral']].value_counts().reset_index(name='conteo')
+    umbrales_count.to_csv("output/umbrales_count.csv", header=True, sep=",", index = False)
 
 # Definición de función de filtrado de datos de umbrales por estación
 def umbrales_filter(estacion):

@@ -9,6 +9,7 @@ from fpdf import FPDF
 from PIL import Image
 from pathlib import Path
 import matplotlib as mpl
+import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 from datetime import date, timedelta
 from matplotlib.figure import Figure
@@ -46,16 +47,20 @@ lluvia_sum = round(lluvia_semanal['muestra'].sum(), 2) # Para obtener el acumula
 min_fecha = pd.to_datetime(lluvia_semanal['fecha'], format="%Y-%m-%d").min().strftime('%d de %B de %Y') # Formateo fecha inicial
 max_fecha = pd.to_datetime(lluvia_semanal['fecha'], format="%Y-%m-%d").max().strftime('%d de %B de %Y') # Formateo fecha final
 porc_transm = round((lluvia_semanal['muestra'].count()/2016)*100, 2) # Se calcula % transmisión de datos
-lluvia_cumsum = lluvia_semanal.reset_index().drop(columns = 'id')['muestra'].cumsum()
+lluvia_cumsum = lluvia_semanal.reset_index().drop(columns = 'id')
+lluvia_cumsum['cumsum'] = lluvia_cumsum['muestra'][::-1].cumsum() # Se crea columna con lluvia acumulada por cada registro
 
 # Extracción de datos de umbrales
 custom_date_parser = lambda x: date.strptime(x, "%d-%m-%Y")
-df_umbrales = pd.read_csv("output/umbrales.csv", date_parser=custom_date_parser)
+df_umbrales = pd.read_csv("output/umbrales_count.csv", date_parser=custom_date_parser)
 df_umbrales['fecha'] = pd.to_datetime(df_umbrales['fecha'], format="%d-%m-%Y").dt.strftime('%Y-%m-%d')
 df_umbrales = df_umbrales[df_umbrales['estacion'] == int(codigoEstacion)] # Se filtra por codigo estacion
 umbrales_amarillos = df_umbrales.conteo[(df_umbrales['fecha'] >= inicio) & (df_umbrales['fecha'] <= fin) & (df_umbrales['umbral'] == 'AMARILLO')].sum()
 umbrales_naranjas = df_umbrales.conteo[(df_umbrales['fecha'] >= inicio) & (df_umbrales['fecha'] <= fin) & (df_umbrales['umbral'] == 'NARANJA')].sum()
 umbrales_rojos = df_umbrales.conteo[(df_umbrales['fecha'] >= inicio) & (df_umbrales['fecha'] <= fin) & (df_umbrales['umbral'] == 'ROJO')].sum()
+df_umbralesRaw = pd.read_csv("output/umbrales_raw.csv")
+df_umbralesRaw['fecha'] = pd.to_datetime(df_umbrales['fecha'], format="%d-%m-%Y").dt.strftime('%Y-%m-%d')
+df_umbralesRaw = df_umbralesRaw[df_umbralesRaw['estacion'] == int(codigoEstacion)] # Se filtra por codigo estacion
 
 # Definición de ruta de fuentes
 fpath = Path("fonts/ArialNovaCond.ttf")
@@ -99,15 +104,18 @@ ax1.bar(t, s, width=0.5, color = "#468AC1", edgecolor='black')
 ax1.xaxis.set_major_formatter(myFmt)
 ax1.grid(color = 'gray',  linestyle = '--', linewidth = 0.2)
 
-x = lluvia_semanal['fecha']
-y = lluvia_cumsum[::-1]
+imagen = plt.imread("logos/rojo.png")
+
+x = lluvia_cumsum['fecha']
+y = lluvia_cumsum['cumsum']
 #ax2 = fig.add_axes([0.13, 0.20, 0.75, 0.3])
 ax2 = fig.add_subplot(212)
 ax2.plot(x, y, color = "#468AC1")
+ax2.scatter(x, y)
 ax2.xaxis.set_major_formatter(myFmt)
 ax2.grid(color = 'gray',  linestyle = '--', linewidth = 0.2)
-ax2.set_xlabel("Precipitación (mm)", font=fpath)
-ax2.set_ylabel("Precipitación por día [mm/día]", font=fpath)
+ax2.set_ylabel("Precipitación acumulada [mm]", font=fpath)
+ax2.set_xlabel("Fechas", font=fpath)
 
 # Converting Figure to an image:
 canvas = FigureCanvas(fig)
@@ -137,7 +145,9 @@ pdf.ln(2)
 #pdf.set_y(50)
 pdf.image(img, w=pdf.epw)# epw es Effective page width
 pdf.ln(1)
-pdf.multi_cell(0, 6, txt = "La calidad de los datos no ha sido verificada exhaustivamente",
+pdf.multi_cell(0, 6, txt = "La calidad de los datos no ha sido verificada exhaustivamente. Los datos "
+                           "no deben ser usados para la toma de decisiones sin haber sido sometidos a un proceso de validación. "
+                           "Corantioquia no se hace responsable por el uso que se le dé a la información.",
                align = "J")
 #pdf.ln(2)
 pdf.output(f"pdfs/{codigo}.pdf")
