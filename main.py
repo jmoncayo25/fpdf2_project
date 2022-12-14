@@ -41,8 +41,8 @@ inicio = (hoy - timedelta(days=6)).strftime('%Y-%m-%d')
 fin = (hoy - timedelta(days=-1)).strftime('%Y-%m-%d')
 lluvia_semanal = getData.lluvia(codigoEstacion, inicio, fin) # Para obtener el conjunto de datos semanal de lluvia
 lluvia_sum = round(lluvia_semanal['muestra'].sum(), 2) # Para obtener el acumulado semanal de lluvia
-min_fecha = pd.to_datetime(lluvia_semanal['fecha'], format="%Y-%m-%d").dt.strftime('%d %B de %Y').max() # Formateo fecha inicial
-max_fecha = pd.to_datetime(lluvia_semanal['fecha'], format="%Y-%m-%d").dt.strftime('%d %B de %Y').min() # Formateo fecha final
+min_fecha = pd.to_datetime(lluvia_semanal['fecha'], format="%Y-%m-%d").min().strftime('%d %B de %Y') # Formateo fecha inicial
+max_fecha = pd.to_datetime(lluvia_semanal['fecha'], format="%Y-%m-%d").max().strftime('%d %B de %Y') # Formateo fecha final
 porc_transm = round((lluvia_semanal['muestra'].count()/2016)*100, 2) # Se calcula % transmisión de datos
 
 # Extracción de datos de umbrales
@@ -122,10 +122,10 @@ pdf.set_text_color(0, 0, 0)
 pdf.multi_cell(0, 6, txt = f"La estación pluviográfica {codigo}, de la territorial {territorial}, ubicada en {ubicacion} y "
                            f"cercana a la fuente hídrica {fuente}, ha presentado, entre el {min_fecha} y el {max_fecha}, {lluvia_sum} mm de lluvia."
                            f" El porcentaje de transmisión de los datos para la estación analizada fue de {porc_transm}%. Así mismo, para las fechas reportadas se presentaron "
-                           f"{umbrales_amarillos} umbral(es) amarillo(s), {umbrales_naranjas} umbral(es) naranja(s) y {umbrales_rojos} umbral(es) rojo(s)",
+                           f"{umbrales_amarillos} umbral(es) amarillo(s), {umbrales_naranjas} umbral(es) naranja(s) y {umbrales_rojos} umbral(es) rojo(s). Para más información consulte"
+                           f" el Geoportal en la página: [geopiragua.corantioquia.gov.co/].",
                align = "J")
 pdf.ln(5)
 pdf.image(img, w=pdf.epw)
 pdf.ln(5)
 pdf.output(f"pdfs/{codigo}.pdf")
-print(umbrales_amarillos, umbrales_naranjas, umbrales_rojos)
