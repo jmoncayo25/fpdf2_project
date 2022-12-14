@@ -59,7 +59,6 @@ umbrales_amarillos = df_umbrales.conteo[(df_umbrales['fecha'] >= inicio) & (df_u
 umbrales_naranjas = df_umbrales.conteo[(df_umbrales['fecha'] >= inicio) & (df_umbrales['fecha'] <= fin) & (df_umbrales['umbral'] == 'NARANJA')].sum()
 umbrales_rojos = df_umbrales.conteo[(df_umbrales['fecha'] >= inicio) & (df_umbrales['fecha'] <= fin) & (df_umbrales['umbral'] == 'ROJO')].sum()
 df_umbralesRaw = pd.read_csv("output/umbrales_raw.csv")
-df_umbralesRaw['fecha'] = pd.to_datetime(df_umbrales['fecha'], format="%d-%m-%Y").dt.strftime('%Y-%m-%d')
 df_umbralesRaw = df_umbralesRaw[df_umbralesRaw['estacion'] == int(codigoEstacion)] # Se filtra por codigo estacion
 
 # Definición de ruta de fuentes
@@ -111,7 +110,6 @@ y = lluvia_cumsum['cumsum']
 #ax2 = fig.add_axes([0.13, 0.20, 0.75, 0.3])
 ax2 = fig.add_subplot(212)
 ax2.plot(x, y, color = "#468AC1")
-ax2.scatter(x, y)
 ax2.xaxis.set_major_formatter(myFmt)
 ax2.grid(color = 'gray',  linestyle = '--', linewidth = 0.2)
 ax2.set_ylabel("Precipitación acumulada [mm]", font=fpath)
